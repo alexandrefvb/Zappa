@@ -2771,6 +2771,19 @@ class Zappa(object):
                     self.boto_session
                 )
 
+                # resolve bug when s3 event still unscheduling and add_event_source fail
+                retries = 0
+                while svc == 's3' and retries < 10 and rule_response == 'exists':
+                    print("Waiting unschedule of s3 event to complete...")
+                    time.sleep(1)
+                    rule_response = add_event_source(
+                        event_source,
+                        lambda_arn,
+                        function,
+                        self.boto_session
+                    )
+                    retries += 1
+
                 if rule_response == 'successful':
                     print("Created {} event schedule for {}!".format(svc, function))
                 elif rule_response == 'failed':
