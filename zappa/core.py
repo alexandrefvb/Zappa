@@ -2774,7 +2774,7 @@ class Zappa(object):
                 # resolve bug when s3 event still unscheduling and add_event_source fail
                 retries = 0
                 print(f'Debug: {svc} - {retries} - {rule_response}')
-                while svc == 's3' and retries < 10 and rule_response == 'exists':
+                while svc.startswith('s3') and retries < 10 and rule_response == 'exists':
                     print("Waiting unschedule of s3 event to complete...")
                     time.sleep(1)
                     rule_response = add_event_source(
